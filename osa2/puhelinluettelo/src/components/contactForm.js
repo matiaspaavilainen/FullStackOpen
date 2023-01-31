@@ -1,7 +1,8 @@
 import { useState } from "react"
+import numberservice from '../services/numbers'
 
-const Form = ({persons, setPersons}) => {
-    
+const Form = ({ persons, setPersons }) => {
+
     const [newName, setNewName] = useState('')
     const [newNumber, setNewNumber] = useState('')
 
@@ -25,15 +26,28 @@ const Form = ({persons, setPersons}) => {
         }
 
         if (persons.some(x => x.name === newName)) {
-            alert(`${newName} is already in the phonebook!`)
+            let contactToUpdate = persons.find(x => x.name === newName)
+            window.confirm(`${newName} is already in the phonebook, do you want to replace the old number with a new one?`)
+            numberservice
+                .update(contactToUpdate.id, newPersonObj)
+                .then(returnedPerson => {
+                    setPersons(persons.map(person => person.id !== contactToUpdate.id ? person : returnedPerson))
+                })
+            setNewName('')
+            setNewNumber('')
             return
         }
 
-        setPersons(persons.concat(newPersonObj))
-        setNewName('')
-        setNewNumber('')
+        // add new person to json
+        numberservice
+            .add(newPersonObj)
+            .then(returnedPerson => {
+                setPersons(persons.concat(returnedPerson))
+                setNewName('')
+                setNewNumber('')
+            })
     }
-    
+
     return (
         <form onSubmit={addPerson}>
             <div>
