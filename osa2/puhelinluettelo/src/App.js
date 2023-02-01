@@ -4,9 +4,12 @@ import Filter from './components/filter'
 import Form from './components/contactForm'
 import Contact from './components/contact'
 import numberservice from './services/numbers'
+import Notification from './components/notification'
 
 const App = () => {
-  const [persons, setPersons] = useState([])
+  const [persons, setPersons] = useState(null)
+  const [errorMessage, setErrorMessage] =useState(null)
+  const [notType, setType] = useState('success')
 
   useEffect(() => {
     numberservice
@@ -14,19 +17,32 @@ const App = () => {
       .then(initialPerson => setPersons(initialPerson))
   }, [])
 
+  if (!persons) {
+    return null
+  }
+
   const removePerson = (name, id) => {
-    console.log({ id })
     window.confirm(`Remove ${name} ?`)
     numberservice.remove(id)
     setPersons(persons.filter(p => p.id !== id))
+    setErrorMessage(`${name} removed form contact list.`)
+    setTimeout(() => {
+      setErrorMessage(null)
+    }, 3000)
   }
 
   return (
-    <div>
+    <div className='main'>
       <h1>Phonebook</h1>
+      <Notification message={errorMessage} type={notType} />
       <Filter persons={persons} setPersons={setPersons} />
       <h2>Add contact</h2>
-      <Form persons={persons} setPersons={setPersons} />
+      <Form 
+        persons={persons}
+        setPersons={setPersons}
+        setErrorMessage={setErrorMessage}
+        setType={setType} 
+      />
       <h2>Numbers</h2>
       {persons.map(person =>
         <Contact

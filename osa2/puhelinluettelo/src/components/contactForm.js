@@ -1,7 +1,7 @@
 import { useState } from "react"
 import numberservice from '../services/numbers'
 
-const Form = ({ persons, setPersons }) => {
+const Form = ({ persons, setPersons, setErrorMessage, setType }) => {
 
     const [newName, setNewName] = useState('')
     const [newNumber, setNewNumber] = useState('')
@@ -33,8 +33,19 @@ const Form = ({ persons, setPersons }) => {
                 .then(returnedPerson => {
                     setPersons(persons.map(person => person.id !== contactToUpdate.id ? person : returnedPerson))
                 })
+                .catch(error => {
+                    setType('error')
+                    setErrorMessage(`${newName} does not exist.`)
+                    setTimeout(() => {
+                        setErrorMessage(null)
+                    }, 3000)
+                })
             setNewName('')
             setNewNumber('')
+            setErrorMessage(`${newName}'s contact updated.`)
+            setTimeout(() => {
+                setErrorMessage(null)
+            }, 3000)
             return
         }
 
@@ -46,6 +57,10 @@ const Form = ({ persons, setPersons }) => {
                 setNewName('')
                 setNewNumber('')
             })
+        setErrorMessage(`${newName} added to contact list.`)
+        setTimeout(() => {
+            setErrorMessage(null)
+        }, 3000)
     }
 
     return (
