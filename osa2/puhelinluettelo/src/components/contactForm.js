@@ -40,6 +40,7 @@ const Form = ({ persons, setPersons, setErrorMessage, setType }) => {
                         setErrorMessage(null)
                     }, 3000)
                 })
+            setType('success')
             setNewName('')
             setNewNumber('')
             setErrorMessage(`${newName}'s contact updated.`)
@@ -57,6 +58,7 @@ const Form = ({ persons, setPersons, setErrorMessage, setType }) => {
                 setNewName('')
                 setNewNumber('')
             })
+        setType('success')
         setErrorMessage(`${newName} added to contact list.`)
         setTimeout(() => {
             setErrorMessage(null)
