@@ -25,6 +25,7 @@ const App = () => {
     window.confirm(`Remove ${name} ?`)
     numberservice.remove(id)
     setPersons(persons.filter(p => p.id !== id))
+    setType('success')
     setErrorMessage(`${name} removed form contact list.`)
     setTimeout(() => {
       setErrorMessage(null)
