@@ -6,6 +6,34 @@ const Button = (props) => (
   </button>
 )
 
+const StatisticsLine = ({ text, value }) => (
+  <tr>
+    <td>{text}</td>
+    <td>{value}</td>
+  </tr>
+)
+
+const Statistics = ({ good, neutral, bad }) => {
+  if ((good + neutral + bad) === 0) {
+    return (
+      <div>
+        No feedback
+      </div>
+    )
+  }
+  return (
+    <table>
+      <tbody>
+        <StatisticsLine text='Good' value={good} />
+        <StatisticsLine text='Neutral' value={neutral} />
+        <StatisticsLine text='Bad' value={bad} />
+        <StatisticsLine text='Average' value={((good - bad) / (good + neutral + bad)).toFixed(2)} />
+        <StatisticsLine text='Positive' value={(good / (good + neutral + bad) * 100).toFixed(2)} />
+      </tbody>
+    </table>
+  )
+}
+
 const App = () => {
   // tallenna napit omaan tilaansa
   const [good, setGood] = useState(0)
@@ -37,16 +65,7 @@ const App = () => {
       <h1>
         Statistics
       </h1>
-      <p>Good: {good}</p>
-      <p>Neutral: {neutral}</p>
-      <p>Bad: {bad}</p>
-
-      <p>
-        Average: {(good - bad) / (good + neutral + bad)}
-      </p>
-      <p>
-        Positive: {(good / (good + neutral + bad) * 100)} %
-      </p>
+      <Statistics good={good} neutral={neutral} bad={bad} />
     </div>
   )
 }
