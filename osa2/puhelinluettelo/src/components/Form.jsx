@@ -1,4 +1,5 @@
 import { useState } from "react"
+import numbers, { getAll, update, create} from '../services/numbers'
 
 const Form = ({ persons, setPersons }) => {
     const [newName, setNewName] = useState('')
@@ -16,10 +17,18 @@ const Form = ({ persons, setPersons }) => {
             setNewName('')
             setNewNumber('')
             return
+        } if (persons.map(person => person.number).includes(newNumber)) {
+            window.alert(`${newNumber} is already in phonebook`)
+            setNewName('')
+            setNewNumber('')
+            return
         }
-        setPersons(persons.concat(newPerson))
-        setNewName('')
-        setNewNumber('')
+        numbers.create(newPerson)
+            .then(returnedPerson => {
+                setPersons(persons.concat(returnedPerson))
+                setNewName('')
+                setNewNumber('')
+            })
     }
 
     const handleNameChange = (event) => {
