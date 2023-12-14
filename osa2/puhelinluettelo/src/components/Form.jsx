@@ -1,5 +1,5 @@
 import { useState } from "react"
-import numbers, { getAll, update, create} from '../services/numbers'
+import numberService from '../services/numberService'
 
 const Form = ({ persons, setPersons }) => {
     const [newName, setNewName] = useState('')
@@ -13,17 +13,19 @@ const Form = ({ persons, setPersons }) => {
         }
 
         if (persons.map(person => person.name).includes(newName)) {
-            window.alert(`${newName} is already in phonebook`)
-            setNewName('')
-            setNewNumber('')
-            return
-        } if (persons.map(person => person.number).includes(newNumber)) {
-            window.alert(`${newNumber} is already in phonebook`)
+            if (window.confirm(`${newName} already in phonebook, replace old number with new?`)) {
+                const id = persons.find(p => p.name === newName).id
+                numberService.update(id, newPerson)
+                    .then(returnedPerson => {
+                        setPersons(persons.map(person => person.id !== id ? person : returnedPerson))
+                    })
+                }
             setNewName('')
             setNewNumber('')
             return
         }
-        numbers.create(newPerson)
+
+        numberService.create(newPerson)
             .then(returnedPerson => {
                 setPersons(persons.concat(returnedPerson))
                 setNewName('')
@@ -50,7 +52,7 @@ const Form = ({ persons, setPersons }) => {
                     Number: <input value={newNumber} onChange={handleNumberChange} />
                 </div>
                 <div>
-                    <button type="submit">add</button>
+                    <button type="submit">Add</button>
                 </div>
             </form>
         </div>

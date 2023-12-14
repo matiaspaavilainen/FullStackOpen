@@ -1,13 +1,16 @@
-import {remove} from '../services/numbers'
+import numberService from "../services/numberService"
 
-const Person = ({ person }) => {
+const Person = ({ person, persons, setPersons }) => {
     const handleRemove = (id) => {
-        numbers.remove(id)
-            .then()
+        if (window.confirm(`Do you want to delete ${person.name} from phonebook`)) {
+            numberService.remove(id)
+            setPersons(persons.filter(p => p.id !== id))
+        }
     }
     return (
         <li>
             {person.name} {person.number}
+            <button onClick={() => handleRemove(person.id)}>Remove</button>
         </li>
     )
 }
