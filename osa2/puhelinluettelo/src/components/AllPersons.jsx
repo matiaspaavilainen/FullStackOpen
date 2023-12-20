@@ -1,6 +1,6 @@
 import Person from "./Person"
 
-const AllPersons =({ persons, setPersons }) => (
+const AllPersons =({ persons, setPersons, setErrorMessage, setType }) => (
     <div>
         <h2>Numbers</h2>
         <ul>
@@ -10,6 +10,8 @@ const AllPersons =({ persons, setPersons }) => (
                     person={person}
                     persons={persons}
                     setPersons={setPersons}
+                    setErrorMessage={setErrorMessage}
+                    setType={setType}
                 />
             )}
         </ul>
