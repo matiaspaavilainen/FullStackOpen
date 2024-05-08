@@ -5,6 +5,17 @@ const Form = ({ persons, setPersons, setErrorMessage, setType }) => {
     const [newName, setNewName] = useState('')
     const [newNumber, setNewNumber] = useState('')
 
+    const configError = (errorMessage, errorType) => {
+        setErrorMessage(errorMessage)
+        setType(errorType)
+        setTimeout(() => {
+            setErrorMessage(null)
+            setType(null)
+        }, 4000)
+        setNewName('')
+        setNewNumber('')
+    }
+
     const addName = (event) => {
         event.preventDefault()
         const newPerson = {
@@ -19,31 +30,21 @@ const Form = ({ persons, setPersons, setErrorMessage, setType }) => {
                     .then(returnedPerson => {
                         setPersons(persons.map(person => person.id !== id ? person : returnedPerson))
                     })
-                setErrorMessage(`${newName}'s number updated`)
-                setType('success')
-                setTimeout(() => {
-                    setErrorMessage(null)
-                    setType(null)
-                }, 3000)
+                configError(`${newName}'s number updated`, 'success')
                 }
-            setNewName('')
-            setNewNumber('')
             return
         }
 
-        numberService.create(newPerson)
+        numberService
+            .create(newPerson)
             .then(returnedPerson => {
                 setPersons(persons.concat(returnedPerson))
-                setNewName('')
-                setNewNumber('')
+            })
+            .catch(error => {
+                configError(error.response.data.error, 'fail')
             })
 
-            setErrorMessage(`${newName} added to phonebook`)
-            setType('success')
-            setTimeout(() => {
-                setErrorMessage(null)
-                setType(null)
-            }, 3000)
+        configError(`${newName} added to phonebook`, 'success')
     }
 
     const handleNameChange = (event) => {
