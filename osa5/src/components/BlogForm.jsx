@@ -1,45 +1,65 @@
+import { useState } from 'react'
+import PropTypes from 'prop-types'
+
 const BlogForm = ({
-    title,
-    author,
-    url,
-    handlePost,
-    handleTitleChange,
-    handleAuthorChange,
-    handleUrlChange,
-    setBlogFormVisible
-    }) => {
-    return (
-        <form onSubmit={handlePost}>
-            <div>
+  createBlog,
+  setBlogFormVisible
+}) => {
+
+  const [title, setTitle] = useState('')
+  const [author, setAuthor] = useState('')
+  const [url, setUrl] = useState('')
+
+  const addBlog = (event) => {
+    event.preventDefault()
+    createBlog({
+      title: title,
+      author: author,
+      url: url,
+    })
+
+    setTitle('')
+    setAuthor('')
+    setUrl('')
+  }
+
+  return (
+    <form onSubmit={addBlog}>
+      <div>
                 Title:
-                <input
-                    type='text'
-                    value={title}
-                    name='Title'
-                    onChange={handleTitleChange}
-                />
-            </div>
-            <div>
+        <input
+          type='text'
+          value={title}
+          name='Title'
+          onChange={({ target }) => setTitle(target.value)}
+        />
+      </div>
+      <div>
                 Author:
-                <input
-                    type='text'
-                    value={author}
-                    name='Author'
-                    onChange={handleAuthorChange}
-                />
-            </div>
-            <div>
+        <input
+          type='text'
+          value={author}
+          name='Author'
+          onChange={({ target }) => setAuthor(target.value)}
+        />
+      </div>
+      <div>
                 Url:
-                <input
-                    type='text'
-                    value={url}
-                    name='Url'
-                    onChange={handleUrlChange}
-                />
-            </div>
-            <button type='submit' onClick={() => setBlogFormVisible(false)}>Post</button>
-        </form>
-    )
+        <input
+          type='text'
+          value={url}
+          name='Url'
+          onChange={({ target }) => setUrl(target.value)}
+        />
+      </div>
+      <button type='submit' onClick={() => setBlogFormVisible(false)}>Post</button>
+    </form>
+  )
+}
+
+BlogForm.propTypes = {
+  createBlog: PropTypes.func.isRequired,
+  setBlogFormVisible: PropTypes.func.isRequired
 }
 
 export default BlogForm

@@ -10,21 +10,18 @@ const App = () => {
   const [blogs, setBlogs] = useState([])
   const [blogFormVisible, setBlogFormVisible] = useState(false)
 
+  const [user, setUser] = useState(null)
+
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
-  
-  const [user, setUser] = useState(null)
-  const [title, setTitle] = useState('')
-  const [author, setAuthor] = useState('')
-  const [url, setUrl] = useState('')
 
   const [errorMessage, setErrorMessage] = useState(null)
   const [type, setType] = useState(null)
 
   useEffect(() => {
     blogService.getAll().then(blogs =>
-      setBlogs( blogs )
-    )  
+      setBlogs(blogs)
+    )
   }, [])
 
   useEffect(() => {
@@ -43,6 +40,7 @@ const App = () => {
       const user = await loginService.login({
         username, password,
       })
+
       window.localStorage.setItem(
         'loggedInUser', JSON.stringify(user)
       )
@@ -62,7 +60,6 @@ const App = () => {
       setTimeout(() => {
         setErrorMessage(null)
       }, 4000)
-
     }
   }
 
@@ -72,16 +69,9 @@ const App = () => {
     blogService.setToken(null)
   }
 
-  const handlePost = async (event) => {
-    event.preventDefault()
-
-    const blog = {
-      title: title,
-      author: author,
-      url: url,
-    }
+  const createBlog = async (newBlog) => {
     try {
-      const createdBlog = await blogService.createBlog(blog)
+      const createdBlog = await blogService.createBlog(newBlog)
       setBlogs(blogs.concat(createdBlog))
 
     } catch (error) {
@@ -92,19 +82,28 @@ const App = () => {
       }, 4000)
     }
 
-    setTitle('')
-    setAuthor('')
-    setUrl('')
-
-    setErrorMessage(`New blog, ${title} by ${author} added!`)
+    setErrorMessage(`New blog, ${newBlog.title} by ${newBlog.author} added!`)
     setType('success')
     setTimeout(() => {
       setErrorMessage(null)
     }, 4000)
-}
+  }
+
+  const addLike = async (blogObject, idToUpdate) => {
+    await blogService.updateBlog(blogObject, idToUpdate)
+    setBlogs(await blogService.getAll())
+  }
+
+  const deleteBlog = async (blogToDelete) => {
+    if (window.confirm(`Do you want to delete blog ${blogToDelete.title} by ${blogToDelete.author}?`)) {
+      await blogService.deleteBlog(blogToDelete.id)
+      setBlogs(await blogService.getAll())
+    }
+  }
+
   const blogForm = () => {
-    const hideWhenVisible = { display: blogFormVisible ? 'none' : ''}
-    const showWhenVisible = { display: blogFormVisible ? '' : 'none'}
+    const hideWhenVisible = { display: blogFormVisible ? 'none' : '' }
+    const showWhenVisible = { display: blogFormVisible ? '' : 'none' }
     return (
       <div>
         <div style={hideWhenVisible}>
@@ -112,13 +111,7 @@ const App = () => {
         </div>
         <div style={showWhenVisible}>
           <BlogForm
-            title={title}
-            author={author}
-            url={url}
-            handlePost={handlePost}
-            handleTitleChange={({ target }) => setTitle(target.value)}
-            handleAuthorChange={({ target }) => setAuthor(target.value)}
-            handleUrlChange={({ target }) => setUrl(target.value)}
+            createBlog={createBlog}
             setBlogFormVisible={setBlogFormVisible}
           />
           <button onClick={() => setBlogFormVisible(false)}>Cancel</button>
@@ -127,16 +120,25 @@ const App = () => {
     )
   }
 
-  const showBlogs = () => (
-    <div>
-      <h2>Blogs</h2>
-      {
-        blogs.map(blog =>
-          <Blog key={blog.id} blog={blog} />
-        )
-      }
-    </div>
-  )
+  const showBlogs = () => {
+    blogs.sort((a, b) => b.likes - a.likes)
+    return (
+      <div>
+        <h2>Blogs</h2>
+        {
+          blogs.map(blog =>
+            <Blog
+              key={blog.id}
+              blog={blog}
+              addLike={addLike}
+              deleteBlog={deleteBlog}
+              user={user}
+            />
+          )
+        }
+      </div>
+    )
+  }
 
   return (
     <div>
@@ -154,8 +156,8 @@ const App = () => {
         {blogForm()}
         {showBlogs()}
       </div>
-      } 
-      
+      }
+
     </div>
   )
 }
